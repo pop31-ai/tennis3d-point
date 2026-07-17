@@ -575,17 +575,13 @@ const PADDLE_HIT = 0.12;
 
 let serveTimer = 0;
 let scoredTimer = 0;
-let scoredSide = 0; // 1 = player scored, -1 = ai scored
 let celebrationTimer = 0;
 let celebrationSide = 0;
-let playerPaddleTarget = new THREE.Vector3(0, TABLE_H + 0.15, TABLE_LEN/2 - 0.3);
-let aiTarget = new THREE.Vector3(0, TABLE_H + 0.15, -TABLE_LEN/2 + 0.3);
 let playerPaddleVel = {x:0, z:0};
 let aiPaddleVel = {x:0, z:0};
 
 const mouse = new THREE.Vector2();
 const raycaster = new THREE.Raycaster();
-const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 
 // ─── Settings ────────────────────────────────────────────
 let aiLevel = 'medium'; // 'easy', 'medium', 'hard'
@@ -663,10 +659,8 @@ function scorePoint(scorer) {
   scoredTimer = 0;
   if (scorer === 1) {
     playerScore++;
-    scoredSide = 1;
   } else {
     aiScore++;
-    scoredSide = -1;
   }
   document.getElementById('scPlayer').textContent = playerScore;
   document.getElementById('scAI').textContent = aiScore;
@@ -1042,7 +1036,9 @@ function animate() {
     playerPaddle.rotation.x *= 0.96;
     if (Math.abs(playerPaddle.rotation.x) < 0.01) playerPaddle.rotation.x = 0;
   }
-  playerPaddle.rotation.z = THREE.MathUtils.lerp(playerPaddle.rotation.z, -playerPaddleVel.x * 0.3, 0.05);
+  if (state !== STATE.IDLE && state !== STATE.SCORED) {
+    playerPaddle.rotation.z = THREE.MathUtils.lerp(playerPaddle.rotation.z, -playerPaddleVel.x * 0.3, 0.05);
+  }
   updateAudience(dt, now);
   updateFlags(dt, now);
   updateTrail();
